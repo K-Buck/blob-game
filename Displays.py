@@ -23,6 +23,23 @@ class Overview():
         self.ax.add_patch(self.perimeter)
         self.ax.axis('equal')
         
+        for entity in self.env.entities:
+            entity.register_display(self.ax)
+        
+        for food in self.env.food:
+            food.register_display(self.ax)
+            
+    def update_display(self):
+        
+        for entity in self.env.entities:
+            entity.update_display()
+        
+        for food in self.env.food:
+            food.update_display()
+            
+        plt.draw()
+        plt.pause(0.00001)
+        
     # Initialize entity in figure
     def register_entity(self, entity):
         pass

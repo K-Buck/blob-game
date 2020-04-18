@@ -39,13 +39,19 @@ class BlobGameEnv():
             
             self.count += 1
             
+            if render:
+                self.viewer.update_display()
+            
         self.close()
                         
     def grow_food(self):
         
         if len(self.food) < self.n_food:
             for n in range(self.n_food - len(self.food)):
-                self.food.append(Food, self.x_max, self.y_max)
+                
+                new_food = Food(self.x_max, self.y_max)
+                new_food.register_display(self.viewer.ax)
+                self.food.append(new_food)
     
     def reset(self):
         self.entities = []
@@ -53,9 +59,6 @@ class BlobGameEnv():
         
         if self.viewer is not None:
             self.close()
-    
-    def render(self, mode='human'):
-        pass
     
     def close(self):
         if self.viewer:

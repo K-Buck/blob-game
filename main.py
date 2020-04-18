@@ -21,4 +21,7 @@ if __name__ == '__main__':
     entity = Blob(x_max, y_max)
     env.entities.append(entity)
     
+    entity = Blob(x_max, y_max)
+    env.entities.append(entity)
+    
     env.start_game(render=True)

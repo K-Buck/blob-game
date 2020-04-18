@@ -9,15 +9,14 @@ import random
 from foods import Food
 import logging
 import numpy as np
+from matplotlib import pyplot as plt
 
 class Blob:
 
     def __init__(self, x_max, y_max, col=None):
         
         if col is None:
-            col = (random.randrange(0, 256),
-                   random.randrange(0, 256),
-                   random.randrange(0, 256))
+            col = np.random.rand(1,3)[0]
             
         sizeRange = (5,8)
         
@@ -37,6 +36,8 @@ class Blob:
         self.ux = 0
         self.uy = 0
         
+        self.circle = None
+        
     @property
     def speed(self):
         return (self.dx*self.dx + self.dy*self.dy)**0.5
@@ -47,7 +48,9 @@ class Blob:
         self.uy = random.randrange(-1, 2)
     
     def step(self, env):
-            
+        
+        self.setRandomMove()
+        
         self.dx += self.ux
         self.dy += self.uy
         
@@ -94,3 +97,14 @@ class Blob:
         elif self.size < other_obj.size:
             other_obj.size = np.sqrt(self.size**2 + other_obj.size**2)
             self.size = 0
+            
+    def register_display(self, ax):
+        self.circle = plt.Circle((self.x,self.y), self.size, facecolor=self.color)
+        ax.add_patch(self.circle)
+        
+    def update_display(self):
+        self.circle.set_center((self.x,self.y))
+        
+    def destroy_display(self):
+        self.circle.remove()
+        self.circle = None
