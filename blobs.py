@@ -103,6 +103,7 @@ class Blob:
         ax.add_patch(self.circle)
         
     def update_display(self):
+        self.circle.set_radius(self.size)
         self.circle.set_center((self.x,self.y))
         
     def destroy_display(self):

@@ -26,7 +26,7 @@ class Overview():
         for entity in self.env.entities:
             entity.register_display(self.ax)
         
-        for food in self.env.food:
+        for food in self.env.foods:
             food.register_display(self.ax)
             
     def update_display(self):
@@ -34,7 +34,7 @@ class Overview():
         for entity in self.env.entities:
             entity.update_display()
         
-        for food in self.env.food:
+        for food in self.env.foods:
             food.update_display()
             
         plt.draw()
