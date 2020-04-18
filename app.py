@@ -61,15 +61,15 @@ class blobApp():
         
     def initialize_game(self):
         
-        RED = (255, 0, 0)
-        BLUE = (0, 0, 255)
-        BLACK = (0, 0, 0)
-        TEAL = (0, 255, 255)
+        color = {'RED'   : (255,   0,   0),
+                 'BLUE'  : (  0,   0, 255),
+                 'BLACK' : (  0,   0,   0),
+                 'TEAL'  : (  0, 255, 255)}
         
         self.blobs = dict(enumerate([Blob(self.WIDTH, self.HEIGHT) for i in range(self.NUM_STARTING_BLOBS)]))
         self.foods = dict(enumerate([Food(self.WIDTH, self.HEIGHT) for i in range(self.NUM_STARTING_FOODS)]))
         
-        self.blobs['player1'] = Blob(self.WIDTH, self.HEIGHT, BLACK)
+        self.blobs['player1'] = Blob(self.WIDTH, self.HEIGHT, color['BLACK'])
         self.blobs['player1'].size = 7
         
     def process_input_events(self):

@@ -46,7 +46,7 @@ class Blob:
         self.ux = random.randrange(-1, 2)
         self.uy = random.randrange(-1, 2)
     
-    def move(self):
+    def step(self, env):
             
         self.dx += self.ux
         self.dy += self.uy
