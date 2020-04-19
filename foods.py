@@ -20,6 +20,8 @@ class Food:
         self.x = random.randrange(0, x_max)
         self.y = random.randrange(0, y_max)
         
+        self.circle = None
+        
     def register_display(self, ax):
         self.circle = plt.Circle((self.x,self.y), self.size, facecolor=self.color)
         ax.add_patch(self.circle)
@@ -28,5 +30,6 @@ class Food:
         self.circle.set_center((self.x,self.y))
         
     def destroy_display(self):
-        self.circle.remove()
-        self.circle = None
+        if self.circle is not None:
+            self.circle.remove()
+            self.circle = None

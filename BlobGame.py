@@ -7,7 +7,9 @@ Created on Fri Apr 17 17:29:24 2020
 
 import numpy as np
 from Displays import Overview
+import blobs
 from foods import Food
+import logging
 
 class BlobGameEnv():
     
@@ -25,22 +27,36 @@ class BlobGameEnv():
         self.count = 0
         self.viewer = None
         
-    def start_game(self, render=False):
+    def start_game(self, render=False, max_frames=500):
                 
+        self.grow_food()
+        
         if render:
-            print('Rendering')
+            logging.info('Rendering')
             self.viewer = Overview(self)
-                
-        while len(self.entities) > 1:
+        
+        while len(self.entities) > 1 :
             
             for entity in self.entities:
                 entity.step(self)    
                 
             self.handle_collisions()
             
+            alive = 0
+            for entity in self.entities:
+                if isinstance(entity, blobs.smart_blob):
+                    entity.post_step(self)
+                    alive +=1
+            
+            if alive == 0:
+                break
+            
             self.grow_food()
             
             self.count += 1
+            
+            if self.count > max_frames:
+                break
             
             if render:
                 self.viewer.update_display()
@@ -66,10 +82,10 @@ class BlobGameEnv():
                 if entity.is_touching(other_entity):
                     entity + other_entity
                     if other_entity.size <= 0:
-                        other_entity.destroy_display()
+                        other_entity.kill_entity(self)
                         dead_entities.append(other_entity)
                     elif entity.size <= 0:
-                        entity.destroy_display()
+                        entity.kill_entity(self)
                         dead_entities.append(entity)
                         break
 
@@ -91,7 +107,8 @@ class BlobGameEnv():
             for n in range(self.n_food - len(self.foods)):
                 
                 new_food = Food(self.x_max, self.y_max)
-                new_food.register_display(self.viewer.ax)
+                if self.viewer is not None:
+                    new_food.register_display(self.viewer.ax)
                 self.foods.append(new_food)
     
     def reset(self):

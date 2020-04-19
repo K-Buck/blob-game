@@ -47,7 +47,8 @@ class Overview():
     # Close figure and child graphics objects
     def close(self):
         self.destroy_displays()
-    
+        plt.close(self.fig)
+        
     # Loop through entities and destroy graphics objects
     def destroy_displays(self):
         pass
