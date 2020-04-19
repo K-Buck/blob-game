@@ -19,6 +19,8 @@ class Food:
         
         self.x = random.randrange(0, x_max)
         self.y = random.randrange(0, y_max)
+        self.dx = 0
+        self.dy = 0
         
         self.circle = None
         

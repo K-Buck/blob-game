@@ -39,7 +39,7 @@ if __name__ == '__main__':
     for episode in range(episodes):
                 
         render = False
-        if episode % 10 == 0:
+        if episode % 1 == 0:
             render = True
             
         env.reset()

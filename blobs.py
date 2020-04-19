@@ -131,26 +131,35 @@ class smart_blob(Blob):
         
         # Observation space:
             # Size of self [units]
-            # Angle to nearest entity [rad]
-            # Range to nearest entity [units]
             # Size of nearest entity [units]
-            # Angle to nearest food [rad]
-            # Range to nearest food [units]
+            # diff vector to closest entity [4,1]
+            # Size of nearest food [units]
+            # Diff vector to closest food [4,1]
             
-        high = np.array([np.finfo(np.float32).max,
-                         math.pi,
+        high = np.array([ 0.,
+                         0.,
                          np.finfo(np.float32).max,
                          np.finfo(np.float32).max,
-                         math.pi,
+                         np.finfo(np.float32).max,
+                         np.finfo(np.float32).max,
+                         0.,
+                         np.finfo(np.float32).max,
+                         np.finfo(np.float32).max,
+                         np.finfo(np.float32).max,
                          np.finfo(np.float32).max],
                         dtype=np.float32)
         
-        low = np.array([0.0,
-                         -math.pi,
-                         0.0,
-                         0.0,
-                         -math.pi,
-                         0.0],
+        low = np.array([ 0.,
+                         0.,
+                         -np.finfo(np.float32).max,
+                         -np.finfo(np.float32).max,
+                         -np.finfo(np.float32).max,
+                         -np.finfo(np.float32).max,
+                         0.,
+                         -np.finfo(np.float32).max,
+                         -np.finfo(np.float32).max,
+                         -np.finfo(np.float32).max,
+                         -np.finfo(np.float32).max],
                         dtype=np.float32)
         
         observation_space = spaces.Box(low, high, dtype=np.float32)
@@ -222,13 +231,13 @@ class smart_blob(Blob):
         
     def get_observation(self, env):
         
-        observation = np.zeros((6,),dtype=np.float32)
+        observation = np.zeros(self.agent.observation_space.shape,dtype=np.float32)
         observation[0] = self.size
         
         # Get nearest entity
         def distance(entity1, entity2):
             return np.linalg.norm(np.array([entity2.x, entity2.y])-np.array([entity1.x, entity1.y]))
-            
+        
         range_entity = 1e6
         closest_entity = self
         for entity in env.entities:
@@ -247,14 +256,19 @@ class smart_blob(Blob):
                 range_food = temp
                 closest_food = food
         
-        az_entity = math.atan2(closest_entity.y - self.y, closest_entity.x - self.x)
-        az_food = math.atan2(closest_food.y - self.y, closest_food.x - self.x)
+        # az_entity = math.atan2(closest_entity.y - self.y, closest_entity.x - self.x) % (2*np.pi)
+        # az_food = math.atan2(closest_food.y - self.y, closest_food.x - self.x) % (2*np.pi)
                 
-        observation[1] = az_entity
-        observation[2] = range_entity
-        observation[3] = closest_entity.size
-        observation[4] = az_food
-        observation[5] = range_food
+        observation[1] = closest_entity.size
+        observation[2] = closest_entity.x - self.x
+        observation[3] = closest_entity.y - self.y
+        observation[4] = closest_entity.dx - self.dx
+        observation[5] = closest_entity.dy - self.dy
+        observation[6]  = closest_food.size
+        observation[7]  = closest_food.x - self.x
+        observation[8]  = closest_food.y - self.y
+        observation[9]  = closest_food.dx - self.dx
+        observation[10] = closest_food.dy - self.dy
         
         return observation
     
@@ -268,7 +282,7 @@ class smart_blob(Blob):
         if self.size == self.prev_size:
             reward = -0.5
         elif self.size > self.prev_size:
-            reward = (self.size - self.prev_size)*20
+            reward = (self.size - self.prev_size)*30
             #reward = 10
         else:
             reward = -10

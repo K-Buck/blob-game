@@ -84,7 +84,7 @@ class DQNAgent(object):
             
         model = Sequential()
         
-        model.add(Dense(self.hidden_dims, input_shape=(self.n_obs,), activation='relu'))
+        model.add(Dense(self.hidden_dims, input_shape=(self.n_obs,), activation='tanh'))
         model.add(Dense(self.hidden_dims, activation='relu'))
         model.add(Dense(self.n_act, activation='linear'))
 

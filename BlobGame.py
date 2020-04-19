@@ -27,7 +27,7 @@ class BlobGameEnv():
         self.count = 0
         self.viewer = None
         
-    def start_game(self, render=False, max_frames=500):
+    def start_game(self, render=False, max_frames=2000):
                 
         self.grow_food()
         
