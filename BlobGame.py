@@ -37,27 +37,35 @@ class BlobGameEnv():
         
         while len(self.entities) > 1 :
             
+            # Step 1: All entities get an opportunity to take an action
             for entity in self.entities:
                 entity.step(self)    
                 
+            # Step 2: Adjudicate collisions between blobs/blobs and blobs/food
             self.handle_collisions()
-            
+     
+            # FIXME
+            # I dont like this implementation
+            # Post process the smart blobs for memory and training
             alive = 0
             for entity in self.entities:
                 if isinstance(entity, blobs.smart_blob):
                     entity.post_step(self)
                     alive +=1
             
+            # If no more smart blobs are alive, break
             if alive == 0:
                 break
             
+            # Step 3: Grow food
             self.grow_food()
             
+            # Break if max frames played
             self.count += 1
-            
             if self.count > max_frames:
                 break
             
+            # Update display
             if render:
                 self.viewer.update_display()
             
@@ -94,6 +102,10 @@ class BlobGameEnv():
         eaten_foods = []
         for entity in self.entities:
             for food in self.foods:
+                
+                if food in eaten_foods:
+                    continue
+                
                 if entity.is_touching(food):
                     entity + food
                     food.destroy_display()

@@ -130,37 +130,14 @@ class smart_blob(Blob):
         super().__init__(x_max, y_max, col)
         
         # Observation space:
-            # Size of self [units]
-            # Size of nearest entity [units]
+            # Difference in Size of nearest entity [units] (+ means you are bigger)
             # diff vector to closest entity [4,1]
-            # Size of nearest food [units]
+            # Difference in Size of nearest food [units]
             # Diff vector to closest food [4,1]
-            
-        high = np.array([ 0.,
-                         0.,
-                         np.finfo(np.float32).max,
-                         np.finfo(np.float32).max,
-                         np.finfo(np.float32).max,
-                         np.finfo(np.float32).max,
-                         0.,
-                         np.finfo(np.float32).max,
-                         np.finfo(np.float32).max,
-                         np.finfo(np.float32).max,
-                         np.finfo(np.float32).max],
-                        dtype=np.float32)
         
-        low = np.array([ 0.,
-                         0.,
-                         -np.finfo(np.float32).max,
-                         -np.finfo(np.float32).max,
-                         -np.finfo(np.float32).max,
-                         -np.finfo(np.float32).max,
-                         0.,
-                         -np.finfo(np.float32).max,
-                         -np.finfo(np.float32).max,
-                         -np.finfo(np.float32).max,
-                         -np.finfo(np.float32).max],
-                        dtype=np.float32)
+        high = np.ones(10,dtype=np.float32) * np.finfo(np.float32).max
+        
+        low = -high
         
         observation_space = spaces.Box(low, high, dtype=np.float32)
         action_space = spaces.Discrete(4)
@@ -232,7 +209,6 @@ class smart_blob(Blob):
     def get_observation(self, env):
         
         observation = np.zeros(self.agent.observation_space.shape,dtype=np.float32)
-        observation[0] = self.size
         
         # Get nearest entity
         def distance(entity1, entity2):
@@ -255,20 +231,17 @@ class smart_blob(Blob):
             if temp < range_food:
                 range_food = temp
                 closest_food = food
-        
-        # az_entity = math.atan2(closest_entity.y - self.y, closest_entity.x - self.x) % (2*np.pi)
-        # az_food = math.atan2(closest_food.y - self.y, closest_food.x - self.x) % (2*np.pi)
                 
-        observation[1] = closest_entity.size
-        observation[2] = closest_entity.x - self.x
-        observation[3] = closest_entity.y - self.y
-        observation[4] = closest_entity.dx - self.dx
-        observation[5] = closest_entity.dy - self.dy
-        observation[6]  = closest_food.size
-        observation[7]  = closest_food.x - self.x
-        observation[8]  = closest_food.y - self.y
-        observation[9]  = closest_food.dx - self.dx
-        observation[10] = closest_food.dy - self.dy
+        observation[0] = self.size - closest_entity.size
+        observation[1] = closest_entity.x - self.x
+        observation[2] = closest_entity.y - self.y
+        observation[3] = closest_entity.dx - self.dx
+        observation[4] = closest_entity.dy - self.dy
+        observation[5] = closest_food.size
+        observation[6] = closest_food.x - self.x
+        observation[7] = closest_food.y - self.y
+        observation[8] = closest_food.dx - self.dx
+        observation[9] = closest_food.dy - self.dy
         
         return observation
     
@@ -285,7 +258,7 @@ class smart_blob(Blob):
             reward = (self.size - self.prev_size)*30
             #reward = 10
         else:
-            reward = -10
+            reward = -30
                 
         return reward
     
@@ -298,7 +271,7 @@ class smart_blob(Blob):
         # Change last memory to a terminal state and retrain
         last_memory = self.agent.replay_memory.pop()
         observation, action, reward, new_observation, done = last_memory
-        reward = -10
+        reward = -30
         done = True
         self.agent.update_replay_memory((observation, action, reward, new_observation, done))
         self.agent.train(terminal_state=True)

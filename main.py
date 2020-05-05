@@ -20,9 +20,9 @@ if __name__ == '__main__':
         
     x_max = 400
     y_max = 400
-    num_entities = 3
+    num_entities = 9
     num_food = 50
-    episodes = 1000
+    episodes = 100000
     
     env = BlobGameEnv(x_max, y_max)
     
@@ -41,7 +41,7 @@ if __name__ == '__main__':
         render = False
         if episode % 1 == 0:
             render = True
-            
+        
         env.reset()
         agent.reset()
         
